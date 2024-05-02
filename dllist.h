@@ -5,22 +5,6 @@
 template<typename T>
 class dllist
 {
-private:
-    struct dllnode
-    {
-        T value;
-        dllnode *next;
-        dllnode *prev;
-
-        dllnode(const T& val, dllnode* nxt = nullptr, dllnode* prv = nullptr)
-            : value(val), next(nxt), prev(prv) {}
-
-        const T& get_value() const {return this->value;}
-        T& get_value() {return this->value;}
-    };
-
-    dllnode *head = nullptr;
-public:
     typedef T value_type;
     typedef value_type* pointer;
     typedef const value_type const_pointer;
@@ -28,6 +12,22 @@ public:
     typedef const value_type& const_reference;
     typedef size_t size_type;
 
+private:
+    struct dllnode
+    {
+        value_type value;
+        dllnode *next;
+        dllnode *prev;
+
+        dllnode(const_reference val, dllnode* nxt = nullptr, dllnode* prv = nullptr)
+            : value(val), next(nxt), prev(prv) {}
+
+        const_reference get_value() const {return this->value;}
+        reference get_value() {return this->value;}
+    };
+
+    dllnode *head = nullptr;
+public:
     // Constructors
     dllist() = default;
 
