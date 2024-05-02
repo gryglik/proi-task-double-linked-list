@@ -11,7 +11,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-set(PROJECT_SOURCES dllist.h)
+set(PROJECT_SOURCES dllist.h dllist.cpp)
 
 add_executable(testGoogle testGoogle.cpp ${PROJECT_SOURCES})
 
