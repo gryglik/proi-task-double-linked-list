@@ -2,14 +2,15 @@
 #include <cstddef>
 #include <iostream>
 
-template<typename T> class dllist
+template<typename T>
+class dllist
 {
 private:
     struct dllnode
     {
         T value;
-        dllnode *prev;
         dllnode *next;
+        dllnode *prev;
 
         dllnode(const T& val, dllnode* nxt = nullptr, dllnode* prv = nullptr)
             : value(val), next(nxt), prev(prv) {}
@@ -30,6 +31,9 @@ public:
     // Constructors
     dllist() = default;
 
+    // Destructor
+    ~dllist() {this->clear();}
+
     // Iterators
     class iterator
     {
@@ -41,7 +45,7 @@ public:
 
         iterator operator++(int);
         value_type& operator*() {return pntr->get_value();}
-        bool operator!=(iterator it) {return this->pntr->get_value() != it->pntr->getvalue();}
+        bool operator!=(iterator it) {return this->pntr != it.pntr;}
     };
     iterator begin() {return iterator(this->head);}
     iterator end() {return iterator(nullptr);}
@@ -49,8 +53,8 @@ public:
     // Modifiers
     void push_front(const_reference val);
     void push_back(const_reference val);
-    reference pop_front();
-    reference pop_back();
+    value_type pop_front();
+    value_type pop_back();
     void clear();
 
     // Capacity
@@ -64,4 +68,43 @@ public:
 
     friend std::ostream operator<<(std::ostream& os, const dllist<value_type>& dllist);
 
+};
+
+template<typename T>
+dllist<T>::iterator dllist<T>::iterator::operator++(int)
+{
+    iterator old_it = *this;
+    this->pntr = this->pntr->next;
+    return old_it;
+};
+
+template<typename T>
+void dllist<T>::push_front(const_reference val)
+{
+    this->head = new dllnode(val, this->head);
+    if (this->head->next != nullptr)
+        this->head->next->prev = this->head;
+};
+
+template<typename T>
+dllist<T>::value_type dllist<T>::pop_front()
+{
+    value_type front;
+    if (not this->empty())
+    {
+        dllnode* to_delete = this->head;
+        front = this->head->get_value();
+        this->head = this->head->next;
+        if (this->head != nullptr)
+            this->head->prev = nullptr;
+        delete to_delete;
+    }
+    return front;
+};
+
+template<typename T>
+void dllist<T>::clear()
+{
+    while (not this->empty())
+        this->pop_front();
 };
