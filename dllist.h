@@ -51,6 +51,12 @@ public:
     iterator begin() {return iterator(this->head);}
     iterator end() {return iterator(nullptr);}
 
+    // Element access
+    reference front() {return this->head->get_value();}
+    const_reference front() const {return this->head->get_value();}
+    reference back();
+    const_reference back() const;
+
     // Modifiers
     void push_front(const_reference val);
     void push_back(const_reference val);
@@ -62,13 +68,7 @@ public:
     bool empty() const {return this->head == nullptr;}
     size_type size() const;
 
-    reference front();
-    const_reference front() const;
-    reference back();
-    const_reference back() const;
-
     friend std::ostream operator<<(std::ostream& os, const dllist<value_type>& dllist);
-
 };
 
 template<typename T>

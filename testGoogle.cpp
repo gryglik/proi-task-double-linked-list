@@ -67,6 +67,25 @@ TEST(dllistTest, pop_front_typical)
     ASSERT_EQ(lst.empty(), true);
 }
 
+TEST(dllistTest, front_const)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    const std::string f = lst.front();
+    ASSERT_EQ(f, "konsternacja");
+}
+
+TEST(dllistTest, front_non_const)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    ASSERT_EQ(lst.front(), "konsternacja");
+    lst.front() = "konkurencja";
+    ASSERT_EQ(lst.front(), "konkurencja");
+}
+
 TEST(dllistTest, clear_typical)
 {
     dllist<std::string> lst;
