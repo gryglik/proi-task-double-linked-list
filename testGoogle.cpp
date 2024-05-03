@@ -11,6 +11,18 @@ TEST(dllistTest, push_front_typical)
     ASSERT_EQ(*lst.begin(), "konsternacja");
 }
 
+TEST(dllistTest, push_front_own_class)
+{
+    struct point {int x; int y;};
+    dllist<point> lst;
+    point pnt;
+    pnt.x = 1;
+    pnt.y = 2;
+    lst.push_front(pnt);
+    ASSERT_EQ((*lst.begin()).x, 1);
+    ASSERT_EQ((*lst.begin()).y, 2);
+}
+
 TEST(dllistTest, forward_iteration_typical)
 {
     dllist<std::string> lst;
@@ -62,4 +74,21 @@ TEST(dllistTest, clear_typical)
     lst.push_front("konsternacja");
     lst.clear();
     ASSERT_EQ(lst.empty(), true);
+    ASSERT_EQ(lst.begin() != lst.end(), false);
+}
+
+TEST(dllistTest, clear_and_push_front)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    lst.clear();
+    ASSERT_EQ(lst.empty(), true);
+    ASSERT_EQ(lst.begin() != nullptr, false);
+    lst.push_front("urobek2");
+    lst.push_front("konsternacja2");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "konsternacja2");
+    ASSERT_EQ(*it++, "urobek2");
+    ASSERT_EQ(it != lst.end(), false);
 }
