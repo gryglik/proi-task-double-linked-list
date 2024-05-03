@@ -46,11 +46,26 @@ public:
             : pntr(node) {}
 
         iterator operator++(int);
-        value_type& operator*() {return pntr->get_value();}
-        bool operator!=(iterator it) {return this->pntr != it.pntr;}
+        reference operator*() const {return pntr->get_value();}
+        bool operator!=(iterator it) const {return this->pntr != it.pntr;}
     };
     iterator begin() {return iterator(this->head);}
     iterator end() {return iterator(nullptr);}
+
+    class const_iterator
+    {
+    private:
+        const dllnode* pntr;
+    public:
+        const_iterator(const dllnode* node)
+            : pntr(node) {}
+
+        const_iterator operator++(int);
+        const_reference operator*() const {return pntr->get_value();}
+        bool operator!=(const_iterator cit) const {return this->pntr != cit.pntr;}
+    };
+    const_iterator cbegin() {return const_iterator(this->head);}
+    const_iterator cend() {return const_iterator(nullptr);}
 
     // Element access
     reference front();
@@ -79,6 +94,14 @@ dllist<T>::iterator dllist<T>::iterator::operator++(int)
     iterator old_it = *this;
     this->pntr = this->pntr->next;
     return old_it;
+};
+
+template<typename T>
+dllist<T>::const_iterator dllist<T>::const_iterator::operator++(int)
+{
+   const_iterator old_it = *this;
+   this->pntr = this->pntr->next;
+   return old_it;
 };
 
 template<typename T>
