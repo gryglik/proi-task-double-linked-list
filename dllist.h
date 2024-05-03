@@ -32,9 +32,15 @@ private:
 public:
     // Constructors
     dllist() = default;
+    dllist(const dllist& src);
+    dllist(dllist&& src);
 
     // Destructor
     ~dllist() {this->clear();}
+
+    // Assigment
+    void operator=(const dllist& src);
+    void operator=(dllist&& src);
 
     // Iterators
     class iterator
@@ -47,7 +53,7 @@ public:
 
         iterator operator++(int);
         reference operator*() const {return pntr->get_value();}
-        bool operator!=(iterator it) const {return this->pntr != it.pntr;}
+        bool operator!=(const iterator it) const {return this->pntr != it.pntr;}
     };
     iterator begin() {return iterator(this->head);}
     iterator end() {return iterator(nullptr);}
@@ -64,8 +70,8 @@ public:
         const_reference operator*() const {return pntr->get_value();}
         bool operator!=(const_iterator cit) const {return this->pntr != cit.pntr;}
     };
-    const_iterator cbegin() {return const_iterator(this->head);}
-    const_iterator cend() {return const_iterator(nullptr);}
+    const_iterator cbegin() const {return const_iterator(this->head);}
+    const_iterator cend() const {return const_iterator(nullptr);}
 
     // Element access
     reference front();
@@ -86,6 +92,46 @@ public:
 
     // Friend methods
     friend std::ostream operator<<(std::ostream& os, const dllist<value_type>& dllist);
+};
+
+template<typename T>
+dllist<T>::dllist(const dllist& src)
+{
+    for (dllist::const_iterator it = src.cbegin(); it != src.cend(); it++)
+        this->push_back(*it);
+};
+
+template<typename T>
+dllist<T>::dllist(dllist&& src)
+{
+    this->head = src.head;
+    this->tail = src.tail;
+    src.head = nullptr;
+    src.tail = nullptr;
+};
+
+template<typename T>
+void dllist<T>::operator=(const dllist& src)
+{
+    if (&src != this)
+    {
+        this->clear();
+        for (dllist::const_iterator it = src.cbegin(); it != src.cend(); it++)
+            this->push_back(*it);
+    }
+};
+
+template<typename T>
+void dllist<T>::operator=(dllist&& src)
+{
+    if (&src != this)
+    {
+        this->clear();
+        this->head = src.head;
+        this->tail = src.tail;
+        src.head = nullptr;
+        src.tail = nullptr;
+    }
 };
 
 template<typename T>

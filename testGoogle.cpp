@@ -1,13 +1,122 @@
 #include <gtest/gtest.h>
 #include "dllist.h"
 
+TEST(dllistTest, copy_constructor_typical)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string> copy_lst(lst);
+    auto it = copy_lst.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it, "urobek");
+}
+
+TEST(dllistTest, copy_constructor_edit)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    dllist<std::string> copy_lst(lst);
+    ASSERT_EQ(*copy_lst.begin(), "urobek");
+    *copy_lst.begin() = "kowariancja";
+    ASSERT_EQ(*lst.begin(), "urobek");
+    ASSERT_EQ(*copy_lst.begin(), "kowariancja");
+}
+
+TEST(dllistTest, move_constructor_typical)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string> lst2(std::move(lst));
+    ASSERT_EQ(lst.empty(), true);
+    auto it = lst2.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "urobek");
+}
+
+TEST(dllistTest, copy_operator_typical)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string> copy_lst;
+    copy_lst = lst;
+    auto it = copy_lst.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it, "urobek");
+}
+
+TEST(dllistTest, copy_operator_not_empty)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string> copy_lst;
+    copy_lst.push_front("kowariancja");
+    copy_lst = lst;
+    auto it = copy_lst.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it, "urobek");
+}
+
+TEST(dllistTest, copy_operator_itself)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+    lst = lst;
+    #pragma GCC diagnostic pop
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it, "urobek");
+}
+
+TEST(dllistTest, move_operator_typical)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string> lst2;
+    lst2 = std::move(lst);
+    ASSERT_EQ(lst.empty(), true);
+    ASSERT_EQ(*lst2.begin(), "konsternacja");
+}
+
+TEST(dllistTest, move_operator_not_empty)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string> lst2;
+    lst2.push_front("kowariancja");
+    lst2 = std::move(lst);
+    ASSERT_EQ(lst.empty(), true);
+    ASSERT_EQ(*lst2.begin(), "konsternacja");
+}
+
+TEST(dllistTest, move_operator_itself)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wself-move"
+    lst = std::move(lst);
+    #pragma GCC diagnostic pop
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it, "urobek");
+}
 
 TEST(dllistTest, iterator_typical)
 {
     dllist<std::string> lst;
     lst.push_front("urobek");
     lst.push_front("konsternacja");
-    dllist<std::string>::iterator it = lst.begin();
+    auto it = lst.begin();
     ASSERT_EQ(*it++, "konsternacja");
     ASSERT_EQ(*it, "urobek");
 }
