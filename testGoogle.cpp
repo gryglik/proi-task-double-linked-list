@@ -92,3 +92,17 @@ TEST(dllistTest, clear_and_push_front)
     ASSERT_EQ(*it++, "urobek2");
     ASSERT_EQ(it != lst.end(), false);
 }
+
+TEST(dllistTest, size_typical)
+{
+    dllist<std::string> lst;
+    ASSERT_EQ(lst.size(), 0);
+    lst.push_front("urobek");
+    ASSERT_EQ(lst.size(), 1);
+    lst.push_front("konsternacja");
+    ASSERT_EQ(lst.size(), 2);
+    lst.pop_front();
+    ASSERT_EQ(lst.size(), 1);
+    lst.pop_front();
+    ASSERT_EQ(lst.size(), 0);
+}

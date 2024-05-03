@@ -5,6 +5,7 @@
 template<typename T>
 class dllist
 {
+public:
     typedef T value_type;
     typedef value_type* pointer;
     typedef const value_type const_pointer;
@@ -108,3 +109,12 @@ void dllist<T>::clear()
     while (not this->empty())
         this->pop_front();
 };
+
+template<typename T>
+dllist<T>::size_type dllist<T>::size() const
+{
+    size_type size = 0;
+    for (dllnode* ptr = this->head; ptr != nullptr; ptr = ptr->next)
+        ++size;
+    return size;
+}
