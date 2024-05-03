@@ -28,6 +28,7 @@ private:
     };
 
     dllnode *head = nullptr;
+    dllnode *tail = head;
 public:
     // Constructors
     dllist() = default;
@@ -52,9 +53,9 @@ public:
     iterator end() {return iterator(nullptr);}
 
     // Element access
-    reference front() {return this->head->get_value();}
-    const_reference front() const {return this->head->get_value();}
-    reference back();
+    reference front();
+    const_reference front() const;
+    reference back() {return this->tail->get_value();}
     const_reference back() const;
 
     // Modifiers
@@ -80,11 +81,31 @@ dllist<T>::iterator dllist<T>::iterator::operator++(int)
 };
 
 template<typename T>
+dllist<T>::reference dllist<T>::front()
+{
+    if (not this->empty())
+        return *this->begin();
+    throw (std::runtime_error("Cannot call front() on empty list."));
+}
+
+template<typename T>
 void dllist<T>::push_front(const_reference val)
 {
     this->head = new dllnode(val, this->head);
     if (this->head->next != nullptr)
         this->head->next->prev = this->head;
+    else
+        this->tail = this->head;
+};
+
+template<typename T>
+void dllist<T>::push_back(const_reference val)
+{
+    this->tail = new dllnode(val, nullptr, this->tail);
+    if (this->tail->prev != nullptr)
+        this->tail->prev->next = this->tail;
+    else
+        this->head = this->tail;
 };
 
 template<typename T>
@@ -117,4 +138,4 @@ dllist<T>::size_type dllist<T>::size() const
     for (dllnode* ptr = this->head; ptr != nullptr; ptr = ptr->next)
         ++size;
     return size;
-}
+};
