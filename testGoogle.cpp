@@ -41,6 +41,24 @@ TEST(dllistTest, front_and_clear)
     EXPECT_THROW(lst.front(), std::runtime_error);
 }
 
+TEST(dllistTest, back_typical)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    ASSERT_EQ(lst.back(), "urobek");
+}
+
+TEST(dllistTest, back_and_clear)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    ASSERT_EQ(lst.back(), "urobek");
+    lst.clear();
+    EXPECT_THROW(lst.back(), std::runtime_error);
+}
+
 TEST(dllistTest, push_front_typical)
 {
     dllist<std::string> lst;
@@ -95,6 +113,34 @@ TEST(dllistTest, pop_front_typical)
     ASSERT_EQ(lst.pop_front(), "konsternacja");
     ASSERT_EQ(lst.pop_front(), "urobek");
     ASSERT_EQ(lst.empty(), true);
+}
+
+TEST(dllistTest, pop_front_empty_list)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    ASSERT_EQ(lst.pop_front(), "urobek");
+    EXPECT_THROW(lst.pop_front(), std::runtime_error);
+}
+
+TEST(dllistTest, pop_back_typical)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    ASSERT_EQ(lst.pop_back(), "gaz");
+    ASSERT_EQ(lst.pop_back(), "konsternacja");
+    ASSERT_EQ(lst.pop_back(), "urobek");
+    ASSERT_EQ(lst.empty(), true);
+}
+
+TEST(dllistTest, pop_back_empty_list)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    ASSERT_EQ(lst.pop_back(), "urobek");
+    EXPECT_THROW(lst.pop_back(), std::runtime_error);
 }
 
 TEST(dllistTest, clear_typical)

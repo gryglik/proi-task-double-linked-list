@@ -55,7 +55,7 @@ public:
     // Element access
     reference front();
     const_reference front() const;
-    reference back() {return this->tail->get_value();}
+    reference back();
     const_reference back() const;
 
     // Modifiers
@@ -66,9 +66,10 @@ public:
     void clear();
 
     // Capacity
-    bool empty() const {return this->head == nullptr;}
+    bool empty() const {return this->head == nullptr && this->tail == nullptr;}
     size_type size() const;
 
+    // Friend methods
     friend std::ostream operator<<(std::ostream& os, const dllist<value_type>& dllist);
 };
 
@@ -86,6 +87,14 @@ dllist<T>::reference dllist<T>::front()
     if (not this->empty())
         return *this->begin();
     throw (std::runtime_error("Cannot call front() on empty list."));
+}
+
+template<typename T>
+dllist<T>::reference dllist<T>::back()
+{
+    if (not this->empty())
+        return this->tail->get_value();
+    throw (std::runtime_error("Cannot call back() on empty list."));
 }
 
 template<typename T>
@@ -111,17 +120,37 @@ void dllist<T>::push_back(const_reference val)
 template<typename T>
 dllist<T>::value_type dllist<T>::pop_front()
 {
-    value_type front;
     if (not this->empty())
     {
         dllnode* to_delete = this->head;
-        front = this->head->get_value();
+        value_type front = this->front();
         this->head = this->head->next;
         if (this->head != nullptr)
             this->head->prev = nullptr;
+        else
+            this->tail = nullptr;
         delete to_delete;
+        return front;
     }
-    return front;
+    throw (std::runtime_error("Cannot call pop_front() on empty list."));
+};
+
+template<typename T>
+dllist<T>::value_type dllist<T>::pop_back()
+{
+    if (not this->empty())
+    {
+        dllnode* to_delete = this->tail;
+        value_type back = this->back();
+        this->tail = this->tail->prev;
+        if (this->tail != nullptr)
+            this->tail->next = nullptr;
+        else
+            this->head = nullptr;
+        delete to_delete;
+        return back;
+    }
+    throw (std::runtime_error("Cannot call pop_back() on empty list."));
 };
 
 template<typename T>
