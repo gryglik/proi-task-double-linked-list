@@ -52,6 +52,7 @@ public:
             : pntr(node) {}
 
         iterator operator++(int);
+        iterator& operator++();
         reference operator*() const {return pntr->get_value();}
         bool operator!=(const iterator it) const {return this->pntr != it.pntr;}
     };
@@ -67,9 +68,12 @@ public:
             : pntr(node) {}
 
         const_iterator operator++(int);
+        const_iterator& operator++();
         const_reference operator*() const {return pntr->get_value();}
         bool operator!=(const_iterator cit) const {return this->pntr != cit.pntr;}
     };
+    const_iterator begin() const {return const_iterator(this->head);}
+    const_iterator end() const {return const_iterator(nullptr);}
     const_iterator cbegin() const {return const_iterator(this->head);}
     const_iterator cend() const {return const_iterator(nullptr);}
 
@@ -97,8 +101,8 @@ public:
 template<typename T>
 dllist<T>::dllist(const dllist& src)
 {
-    for (dllist::const_iterator it = src.cbegin(); it != src.cend(); it++)
-        this->push_back(*it);
+    for (const_reference element : src)
+        this->push_back(element);
 };
 
 template<typename T>
@@ -116,8 +120,8 @@ void dllist<T>::operator=(const dllist& src)
     if (&src != this)
     {
         this->clear();
-        for (dllist::const_iterator it = src.cbegin(); it != src.cend(); it++)
-            this->push_back(*it);
+        for (const_reference element : src)
+            this->push_back(element);
     }
 };
 
@@ -143,11 +147,25 @@ dllist<T>::iterator dllist<T>::iterator::operator++(int)
 };
 
 template<typename T>
+dllist<T>::iterator& dllist<T>::iterator::operator++()
+{
+    this->pntr = this->pntr->next;
+    return *this;
+};
+
+template<typename T>
 dllist<T>::const_iterator dllist<T>::const_iterator::operator++(int)
 {
    const_iterator old_it = *this;
    this->pntr = this->pntr->next;
    return old_it;
+};
+
+template<typename T>
+dllist<T>::const_iterator& dllist<T>::const_iterator::operator++()
+{
+   this->pntr = this->pntr->next;
+   return *this;
 };
 
 template<typename T>

@@ -135,16 +135,7 @@ TEST(dllistTest, iterator_modify)
     ASSERT_EQ(*it, "urobek");
 }
 
-TEST(dllistTest, const_iterator_typical)
-{
-    dllist<std::string> lst;
-    lst.push_front("urobek");
-    lst.push_front("konsternacja");
-    dllist<std::string>::const_iterator it = lst.cbegin();
-    ASSERT_EQ(*it, "konsternacja");
-}
-
-TEST(dllistTest, forward_iteration_typical)
+TEST(dllistTest, iterator_postincrementation)
 {
     dllist<std::string> lst;
     lst.push_front("urobek");
@@ -157,7 +148,37 @@ TEST(dllistTest, forward_iteration_typical)
     ASSERT_EQ(it != lst.end(), false);
 }
 
-TEST(dllistTest, forward_const_iteration_typical)
+TEST(dllistTest, iterator_preincrementation)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string>::iterator it = lst.begin();
+    ASSERT_EQ(*++it, "urobek");
+    ASSERT_EQ(++it != lst.end(), false);
+}
+
+TEST(dllistTest, forward_iteration_auto)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    lst.push_front("kowariancja");
+    auto it = lst.begin();
+    for (auto element : lst)
+        ASSERT_EQ(element, *it++);
+}
+
+TEST(dllistTest, const_iterator_typical)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    dllist<std::string>::const_iterator it = lst.cbegin();
+    ASSERT_EQ(*it, "konsternacja");
+}
+
+TEST(dllistTest, const_iterator_postincrementation)
 {
     dllist<std::string> lst;
     lst.push_front("urobek");
@@ -170,10 +191,43 @@ TEST(dllistTest, forward_const_iteration_typical)
     ASSERT_EQ(it != lst.cend(), false);
 }
 
+TEST(dllistTest, const_iterator_preincrementation)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    const  dllist<std::string> lst2 = lst;
+    dllist<std::string>::const_iterator it = lst2.begin();
+    ASSERT_EQ(*++it, "urobek");
+    ASSERT_EQ(++it != lst.cend(), false);
+}
+
+TEST(dllistTest, const_forward_iteration_auto)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    lst.push_front("kowariancja");
+    const dllist<std::string>lst2 = lst;
+    auto it = lst.begin();
+    for (auto element : lst2)
+        ASSERT_EQ(element, *it++);
+}
+
 TEST(dllistTest, begin_end_empty_list)
 {
     dllist<std::string> lst;
     ASSERT_EQ(lst.begin() != lst.end(), false);
+}
+
+TEST(dllistTest, cbegin_cend_and_begin_end)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    const  dllist<std::string> lst2 = lst;
+    ASSERT_EQ(lst2.begin() != lst2.cbegin(), false);
+    ASSERT_EQ(lst2.end() != lst2.cend(), false);
 }
 
 TEST(dllistTest, cbegin_cend_empty_list)
