@@ -85,9 +85,21 @@ public:
 
     // Modifiers
     void push_front(const_reference val);
+    void push_front(value_type&& val);
+
     void push_back(const_reference val);
+    void push_back(value_type&& val);
+
     value_type pop_front();
     value_type pop_back();
+
+    iterator insert(const_iterator it, const_reference val, size_type size = 1);
+    iterator insert(const_iterator it, value_type&& val);
+    iterator insert(const_iterator it, const_iterator first, const_iterator last);
+
+    iterator erase(const_iterator it);
+    iterator erase(const_iterator first, const_iterator last);
+
     void clear();
 
     // Capacity
@@ -170,6 +182,14 @@ dllist<T>::const_iterator& dllist<T>::const_iterator::operator++()
 
 template<typename T>
 dllist<T>::reference dllist<T>::front()
+{
+    if (not this->empty())
+        return *this->begin();
+    throw (std::runtime_error("Cannot call front() on empty list."));
+}
+
+template<typename T>
+dllist<T>::const_reference dllist<T>::front() const
 {
     if (not this->empty())
         return *this->begin();

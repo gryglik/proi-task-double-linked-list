@@ -236,6 +236,15 @@ TEST(dllistTest, cbegin_cend_empty_list)
     ASSERT_EQ(lst.cbegin() != lst.cend(), false);
 }
 
+TEST(dllistTest, front_const)
+{
+    dllist<std::string> lst;
+    lst.push_front("urobek");
+    lst.push_front("konsternacja");
+    const dllist<std::string> lst2 = lst;
+    ASSERT_EQ(lst2.front(), "konsternacja");
+}
+
 TEST(dllistTest, front_non_const)
 {
     dllist<std::string> lst;
