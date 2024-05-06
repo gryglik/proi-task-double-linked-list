@@ -328,7 +328,7 @@ TEST(dllistTest, push_back_typical)
     ASSERT_EQ(*++lst.begin(), "konsternacja");
 }
 
-TEST(dllistTest, push_back_movel)
+TEST(dllistTest, push_back_move)
 {
     dllist<std::string> lst;
     lst.push_back("urobek");

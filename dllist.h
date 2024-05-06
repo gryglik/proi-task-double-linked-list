@@ -93,7 +93,7 @@ public:
     void push_front(value_type&& val);
 
     void push_back(const_reference val);
-    // void push_back(value_type&& val);
+    void push_back(value_type&& val);
 
     value_type pop_front();
     value_type pop_back();
@@ -233,6 +233,16 @@ template<typename T>
 void dllist<T>::push_back(const_reference val)
 {
     this->tail = new dllnode(val, nullptr, this->tail);
+    if (this->tail->prev != nullptr)
+        this->tail->prev->next = this->tail;
+    else
+        this->head = this->tail;
+};
+
+template<typename T>
+void dllist<T>::push_back(value_type&& val)
+{
+    this->tail = new dllnode(std::move(val), nullptr, this->tail);
     if (this->tail->prev != nullptr)
         this->tail->prev->next = this->tail;
     else
