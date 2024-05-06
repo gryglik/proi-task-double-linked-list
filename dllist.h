@@ -103,7 +103,7 @@ public:
     // iterator insert(const_iterator it, const_iterator first, const_iterator last);
 
     iterator erase(const_iterator it);
-    iterator erase(const_iterator first, const_iterator last);
+    // iterator erase(const_iterator first, const_iterator last);
 
     void clear();
 
@@ -349,6 +349,26 @@ dllist<T>::iterator dllist<T>::insert(const_iterator it, value_type&& val)
     it.pntr->prev = it.pntr->prev->next;
     return it.pntr->prev;
 };
+
+template<typename T>
+dllist<T>::iterator dllist<T>::erase(const_iterator it)
+{
+    if (it == this->cbegin())
+    {
+        this->pop_front();
+        return iterator(this->begin());
+    }
+
+    if (it == this->cend())
+        return iterator(this->end());
+
+    dllnode* to_delete = it.pntr;
+    it.pntr->prev->next = it.pntr->next;
+    it.pntr->next->prev = it.pntr->prev;
+    dllnode* following = it.pntr->next;
+    delete to_delete;
+    return iterator(following);
+}
 
 template<typename T>
 void dllist<T>::clear()

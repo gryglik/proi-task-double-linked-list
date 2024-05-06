@@ -566,6 +566,49 @@ TEST(dllistTest, insert_multiple_end)
     ASSERT_EQ(*it++, "kowariancja");
 }
 
+TEST(dllistTest, erase_typical)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator erased_it = lst.erase(++lst.cbegin());
+    ASSERT_EQ(*erased_it, "gaz");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "gaz");
+    ASSERT_EQ(it == lst.end(), true);
+}
+
+TEST(dllistTest, erase_begin)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator erased_it = lst.erase(lst.cbegin());
+    ASSERT_EQ(*erased_it, "konsternacja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+    ASSERT_EQ(it == lst.end(), true);
+}
+
+TEST(dllistTest, erase_end)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator erased_it = lst.erase(lst.cend());
+    ASSERT_EQ(erased_it == lst.end(), true);
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+    ASSERT_EQ(it == lst.end(), true);
+}
+
 TEST(dllistTest, clear_typical)
 {
     dllist<std::string> lst;
