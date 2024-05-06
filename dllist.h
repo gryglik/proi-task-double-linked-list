@@ -210,6 +210,14 @@ dllist<T>::reference dllist<T>::back()
 };
 
 template<typename T>
+dllist<T>::const_reference dllist<T>::back() const
+{
+    if (not this->empty())
+        return this->tail->get_value();
+    throw (std::runtime_error("Cannot call back() on empty list."));
+};
+
+template<typename T>
 void dllist<T>::push_front(const_reference val)
 {
     this->head = new dllnode(val, this->head);
