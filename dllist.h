@@ -22,6 +22,8 @@ private:
 
         dllnode(const_reference val, dllnode* nxt = nullptr, dllnode* prv = nullptr)
             : value(val), next(nxt), prev(prv) {}
+        dllnode(value_type&& val, dllnode* nxt = nullptr, dllnode* prv = nullptr)
+            : value(std::move(val)), next(nxt), prev(prv) {}
 
         const_reference get_value() const {return this->value;}
         reference get_value() {return this->value;}
@@ -55,6 +57,7 @@ public:
         iterator& operator++();
         reference operator*() const {return pntr->get_value();}
         bool operator!=(const iterator it) const {return this->pntr != it.pntr;}
+        bool operator==(const iterator it) const {return this->pntr == it.pntr;}
     };
     iterator begin() {return iterator(this->head);}
     iterator end() {return iterator(nullptr);}
@@ -62,15 +65,17 @@ public:
     class const_iterator
     {
     private:
-        const dllnode* pntr;
+        dllnode* pntr;
+        friend class dllist;
     public:
-        const_iterator(const dllnode* node)
+        const_iterator(dllnode* node)
             : pntr(node) {}
 
         const_iterator operator++(int);
         const_iterator& operator++();
         const_reference operator*() const {return pntr->get_value();}
         bool operator!=(const_iterator cit) const {return this->pntr != cit.pntr;}
+        bool operator==(const_iterator cit) const {return this->pntr == cit.pntr;}
     };
     const_iterator begin() const {return const_iterator(this->head);}
     const_iterator end() const {return const_iterator(nullptr);}
@@ -88,14 +93,14 @@ public:
     void push_front(value_type&& val);
 
     void push_back(const_reference val);
-    void push_back(value_type&& val);
+    // void push_back(value_type&& val);
 
     value_type pop_front();
     value_type pop_back();
 
-    iterator insert(const_iterator it, const_reference val, size_type size = 1);
+    iterator insert(const_iterator it, const_reference val, size_type size);
     iterator insert(const_iterator it, value_type&& val);
-    iterator insert(const_iterator it, const_iterator first, const_iterator last);
+    // iterator insert(const_iterator it, const_iterator first, const_iterator last);
 
     iterator erase(const_iterator it);
     iterator erase(const_iterator first, const_iterator last);
@@ -186,7 +191,7 @@ dllist<T>::reference dllist<T>::front()
     if (not this->empty())
         return *this->begin();
     throw (std::runtime_error("Cannot call front() on empty list."));
-}
+};
 
 template<typename T>
 dllist<T>::const_reference dllist<T>::front() const
@@ -194,7 +199,7 @@ dllist<T>::const_reference dllist<T>::front() const
     if (not this->empty())
         return *this->begin();
     throw (std::runtime_error("Cannot call front() on empty list."));
-}
+};
 
 template<typename T>
 dllist<T>::reference dllist<T>::back()
@@ -202,12 +207,22 @@ dllist<T>::reference dllist<T>::back()
     if (not this->empty())
         return this->tail->get_value();
     throw (std::runtime_error("Cannot call back() on empty list."));
-}
+};
 
 template<typename T>
 void dllist<T>::push_front(const_reference val)
 {
     this->head = new dllnode(val, this->head);
+    if (this->head->next != nullptr)
+        this->head->next->prev = this->head;
+    else
+        this->tail = this->head;
+};
+
+template<typename T>
+void dllist<T>::push_front(value_type&& val)
+{
+    this->head = new dllnode(std::move(val), this->head);
     if (this->head->next != nullptr)
         this->head->next->prev = this->head;
     else
@@ -258,6 +273,63 @@ dllist<T>::value_type dllist<T>::pop_back()
         return back;
     }
     throw (std::runtime_error("Cannot call pop_back() on empty list."));
+};
+
+template<typename T>
+dllist<T>::iterator dllist<T>::insert(const_iterator it, const_reference val, size_type size)
+{
+    dllnode* first = nullptr;
+
+    if (size == 0)
+        return iterator(it.pntr);
+
+    if (it == this->cbegin())
+    {
+        while (size--)
+            this->push_front(val);
+        return this->begin();
+    }
+
+    if (it == this->cend())
+    {
+        this->push_back(val);
+        size--;
+        first = this->tail;
+        while (size--)
+            this->push_back(val);
+        return iterator(first);
+    }
+
+    first = new dllnode(val, it.pntr, it.pntr->prev);
+    it.pntr->prev->next = first;
+    it.pntr->prev = first;
+    size--;
+    while (size--)
+    {
+        it.pntr->prev->next = new dllnode(val, it.pntr, it.pntr->prev);
+        it.pntr->prev = it.pntr->prev->next;
+    }
+    return iterator(first);
+};
+
+template<typename T>
+dllist<T>::iterator dllist<T>::insert(const_iterator it, value_type&& val)
+{
+    if (it == this->cbegin())
+    {
+        this->push_front(std::move(val));
+        return this->begin();
+    }
+
+    if (it == this->cend())
+    {
+        this->push_back(std::move(val));
+        return iterator(this->tail);
+    }
+
+    it.pntr->prev->next = new dllnode(std::move(val), it.pntr, it.pntr->prev);
+    it.pntr->prev = it.pntr->prev->next;
+    return it.pntr->prev;
 };
 
 template<typename T>

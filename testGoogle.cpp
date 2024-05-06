@@ -217,7 +217,7 @@ TEST(dllistTest, const_forward_iteration_auto)
 TEST(dllistTest, begin_end_empty_list)
 {
     dllist<std::string> lst;
-    ASSERT_EQ(lst.begin() != lst.end(), false);
+    ASSERT_EQ(lst.begin() == lst.end(), true);
 }
 
 TEST(dllistTest, cbegin_cend_and_begin_end)
@@ -226,14 +226,14 @@ TEST(dllistTest, cbegin_cend_and_begin_end)
     lst.push_front("urobek");
     lst.push_front("konsternacja");
     const  dllist<std::string> lst2 = lst;
-    ASSERT_EQ(lst2.begin() != lst2.cbegin(), false);
-    ASSERT_EQ(lst2.end() != lst2.cend(), false);
+    ASSERT_EQ(lst2.begin() == lst2.cbegin(), true);
+    ASSERT_EQ(lst2.end() == lst2.cend(), true);
 }
 
 TEST(dllistTest, cbegin_cend_empty_list)
 {
     dllist<std::string> lst;
-    ASSERT_EQ(lst.cbegin() != lst.cend(), false);
+    ASSERT_EQ(lst.cbegin() == lst.cend(), true);
 }
 
 TEST(dllistTest, front_const)
@@ -290,6 +290,20 @@ TEST(dllistTest, push_front_typical)
     ASSERT_EQ(*lst.begin(), "urobek");
     lst.push_front("konsternacja");
     ASSERT_EQ(*lst.begin(), "konsternacja");
+    ASSERT_EQ(*++lst.begin(), "urobek");
+}
+
+TEST(dllistTest, push_front_move)
+{
+     dllist<std::string> lst;
+    lst.push_front(std::move("urobek"));
+    ASSERT_EQ(*lst.begin(), "urobek");
+    std::string str = "konsternacja";
+    lst.push_front(std::move(str));
+    ASSERT_EQ(*lst.begin(), "konsternacja");
+    ASSERT_EQ(*++lst.begin(), "urobek");
+    str = "kowariancja";
+    ASSERT_EQ(*lst.begin(), "konsternacja");
 }
 
 TEST(dllistTest, push_front_own_class)
@@ -308,8 +322,23 @@ TEST(dllistTest, push_back_typical)
 {
     dllist<std::string> lst;
     lst.push_back("urobek");
-    ASSERT_EQ(lst.empty(), false);
     ASSERT_EQ(*lst.begin(), "urobek");
+    lst.push_back("konsternacja");
+    ASSERT_EQ(*lst.begin(), "urobek");
+    ASSERT_EQ(*++lst.begin(), "konsternacja");
+}
+
+TEST(dllistTest, push_back_movel)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    ASSERT_EQ(*lst.begin(), "urobek");
+    std::string str = "konsternacja";
+    lst.push_back(str);
+    ASSERT_EQ(*lst.begin(), "urobek");
+    ASSERT_EQ(*++lst.begin(), "konsternacja");
+    str = "kowariancja";
+    ASSERT_EQ(*++lst.begin(), "konsternacja");
 }
 
 TEST(dllistTest, push_front_back)
@@ -365,6 +394,165 @@ TEST(dllistTest, pop_back_empty_list)
     lst.push_front("urobek");
     ASSERT_EQ(lst.pop_back(), "urobek");
     EXPECT_THROW(lst.pop_back(), std::runtime_error);
+}
+
+TEST(dllistTest, insert_single_typical)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(++lst.cbegin(), "kowariancja", 1);
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(*inserted_it++, "konsternacja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+}
+
+TEST(dllistTest, insert_single_begin)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(lst.cbegin(), "kowariancja", 1);
+    ASSERT_EQ(*inserted_it, "kowariancja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+}
+
+TEST(dllistTest, insert_single_end)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(lst.cend(), "kowariancja", 1);
+    ASSERT_EQ(*inserted_it, "kowariancja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+    ASSERT_EQ(*it++, "kowariancja");
+}
+
+TEST(dllistTest, insert_single_move_typical)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    std::string str = "kowariancja";
+    dllist<std::string>::iterator inserted_it = lst.insert(++lst.cbegin(), std::move(str));
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(*inserted_it, "konsternacja");
+    ASSERT_EQ(*++lst.begin(), "kowariancja");
+    str = "konkatenacja";
+    ASSERT_EQ(*++lst.begin(), "kowariancja");
+}
+
+TEST(dllistTest, insert_single_move_begin)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    std::string str = "kowariancja";
+    dllist<std::string>::iterator inserted_it = lst.insert(lst.cbegin(), std::move(str));
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(*inserted_it, "urobek");
+    ASSERT_EQ(lst.front(), "kowariancja");
+    str = "konkatenacja";
+    ASSERT_EQ(lst.front(), "kowariancja");
+}
+
+TEST(dllistTest, insert_single_move_end)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    std::string str = "kowariancja";
+    dllist<std::string>::iterator inserted_it = lst.insert(lst.cend(), std::move(str));
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(inserted_it == lst.end(), true);
+    ASSERT_EQ(lst.back(), "kowariancja");
+    str = "konkatenacja";
+    ASSERT_EQ(lst.back(), "kowariancja");
+}
+
+TEST(dllistTest, insert_nothing)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(++lst.cbegin(), "kowariancja", 0);
+    ASSERT_EQ(*inserted_it, "konsternacja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+}
+
+TEST(dllistTest, insert_multiple_typical)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(++lst.cbegin(), "kowariancja", 3);
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(*inserted_it++, "kowariancja");
+    ASSERT_EQ(*inserted_it++, "konsternacja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+}
+
+TEST(dllistTest, insert_multiple_begin)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(lst.cbegin(), "kowariancja", 3);
+    ASSERT_EQ(*inserted_it, "kowariancja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+}
+
+TEST(dllistTest, insert_multiple_end)
+{
+    dllist<std::string> lst;
+    lst.push_back("urobek");
+    lst.push_back("konsternacja");
+    lst.push_back("gaz");
+    dllist<std::string>::iterator inserted_it = lst.insert(lst.cend(), "kowariancja", 3);
+    ASSERT_EQ(*inserted_it, "kowariancja");
+    auto it = lst.begin();
+    ASSERT_EQ(*it++, "urobek");
+    ASSERT_EQ(*it++, "konsternacja");
+    ASSERT_EQ(*it++, "gaz");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "kowariancja");
+    ASSERT_EQ(*it++, "kowariancja");
 }
 
 TEST(dllistTest, clear_typical)
