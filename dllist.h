@@ -48,39 +48,53 @@ public:
     class iterator
     {
     private:
-        dllnode* pntr;
-    public:
-        iterator(dllnode* node)
-            : pntr(node) {}
+        const dllist* list_pntr;
+        dllnode* node_pntr;
 
+        iterator(const dllist* list, dllnode* node)
+            : list_pntr(list), node_pntr(node) {}
+
+        friend class dllist;
+    public:
         iterator operator++(int);
         iterator& operator++();
-        reference operator*() const {return pntr->get_value();}
-        bool operator!=(const iterator it) const {return this->pntr != it.pntr;}
-        bool operator==(const iterator it) const {return this->pntr == it.pntr;}
+
+        iterator operator--(int);
+        iterator& operator--();
+
+        reference operator*() const {return node_pntr->get_value();}
+
+        bool operator!=(const iterator it) const {return this->node_pntr != it.node_pntr;}
+        bool operator==(const iterator it) const {return this->node_pntr == it.node_pntr;}
     };
-    iterator begin() {return iterator(this->head);}
-    iterator end() {return iterator(nullptr);}
+    iterator begin() {return iterator(this, this->head);}
+    iterator end() {return iterator(this, nullptr);}
 
     class const_iterator
     {
     private:
-        dllnode* pntr;
+        const dllist* list_pntr;
+        dllnode* node_pntr;
+
+        const_iterator(const dllist* list, dllnode* node)
+            : list_pntr(list), node_pntr(node) {}
+
         friend class dllist;
     public:
-        const_iterator(dllnode* node)
-            : pntr(node) {}
-
         const_iterator operator++(int);
         const_iterator& operator++();
-        const_reference operator*() const {return pntr->get_value();}
-        bool operator!=(const_iterator cit) const {return this->pntr != cit.pntr;}
-        bool operator==(const_iterator cit) const {return this->pntr == cit.pntr;}
+
+        const_iterator operator--(int);
+        const_iterator& operator--();
+
+        const_reference operator*() const {return node_pntr->get_value();}
+        bool operator!=(const_iterator cit) const {return this->node_pntr != cit.node_pntr;}
+        bool operator==(const_iterator cit) const {return this->node_pntr == cit.node_pntr;}
     };
-    const_iterator begin() const {return const_iterator(this->head);}
-    const_iterator end() const {return const_iterator(nullptr);}
-    const_iterator cbegin() const {return const_iterator(this->head);}
-    const_iterator cend() const {return const_iterator(nullptr);}
+    const_iterator begin() const {return const_iterator(this, this->head);}
+    const_iterator end() const {return const_iterator(this, nullptr);}
+    const_iterator cbegin() const {return const_iterator(this, this->head);}
+    const_iterator cend() const {return const_iterator(this, nullptr);}
 
     // Element access
     reference front();
@@ -100,10 +114,8 @@ public:
 
     iterator insert(const_iterator it, const_reference val, size_type size);
     iterator insert(const_iterator it, value_type&& val);
-    // iterator insert(const_iterator it, const_iterator first, const_iterator last);
 
     iterator erase(const_iterator it);
-    // iterator erase(const_iterator first, const_iterator last);
 
     void clear();
 
@@ -159,14 +171,35 @@ template<typename T>
 dllist<T>::iterator dllist<T>::iterator::operator++(int)
 {
     iterator old_it = *this;
-    this->pntr = this->pntr->next;
+    this->node_pntr = this->node_pntr->next;
     return old_it;
 };
 
 template<typename T>
 dllist<T>::iterator& dllist<T>::iterator::operator++()
 {
-    this->pntr = this->pntr->next;
+    this->node_pntr = this->node_pntr->next;
+    return *this;
+};
+
+template<typename T>
+dllist<T>::iterator dllist<T>::iterator::operator--(int)
+{
+    iterator old_it = *this;
+    if (this->node_pntr == nullptr)
+        this->node_pntr = this->list_pntr->tail;
+    else
+        this->node_pntr = this->node_pntr->prev;
+    return old_it;
+};
+
+template<typename T>
+dllist<T>::iterator& dllist<T>::iterator::operator--()
+{
+    if (this->node_pntr == nullptr)
+        this->node_pntr = this->list_pntr->tail;
+    else
+        this->node_pntr = this->node_pntr->prev;
     return *this;
 };
 
@@ -174,15 +207,36 @@ template<typename T>
 dllist<T>::const_iterator dllist<T>::const_iterator::operator++(int)
 {
    const_iterator old_it = *this;
-   this->pntr = this->pntr->next;
+   this->node_pntr = this->node_pntr->next;
    return old_it;
 };
 
 template<typename T>
 dllist<T>::const_iterator& dllist<T>::const_iterator::operator++()
 {
-   this->pntr = this->pntr->next;
+   this->node_pntr = this->node_pntr->next;
    return *this;
+};
+
+template<typename T>
+dllist<T>::const_iterator dllist<T>::const_iterator::operator--(int)
+{
+    const_iterator old_it = *this;
+    if (this->node_pntr == nullptr)
+        this->node_pntr = this->list_pntr->tail;
+    else
+        this->node_pntr = this->node_pntr->prev;
+    return old_it;
+};
+
+template<typename T>
+dllist<T>::const_iterator& dllist<T>::const_iterator::operator--()
+{
+    if (this->node_pntr == nullptr)
+        this->node_pntr = this->list_pntr->tail;
+    else
+        this->node_pntr = this->node_pntr->prev;
+    return *this;
 };
 
 template<typename T>
@@ -299,7 +353,7 @@ dllist<T>::iterator dllist<T>::insert(const_iterator it, const_reference val, si
     dllnode* first = nullptr;
 
     if (size == 0)
-        return iterator(it.pntr);
+        return iterator(this, it.node_pntr);
 
     if (it == this->cbegin())
     {
@@ -315,19 +369,19 @@ dllist<T>::iterator dllist<T>::insert(const_iterator it, const_reference val, si
         first = this->tail;
         while (size--)
             this->push_back(val);
-        return iterator(first);
+        return iterator(this, first);
     }
 
-    first = new dllnode(val, it.pntr, it.pntr->prev);
-    it.pntr->prev->next = first;
-    it.pntr->prev = first;
+    first = new dllnode(val, it.node_pntr, it.node_pntr->prev);
+    it.node_pntr->prev->next = first;
+    it.node_pntr->prev = first;
     size--;
     while (size--)
     {
-        it.pntr->prev->next = new dllnode(val, it.pntr, it.pntr->prev);
-        it.pntr->prev = it.pntr->prev->next;
+        it.node_pntr->prev->next = new dllnode(val, it.node_pntr, it.node_pntr->prev);
+        it.node_pntr->prev = it.node_pntr->prev->next;
     }
-    return iterator(first);
+    return iterator(this, first);
 };
 
 template<typename T>
@@ -342,12 +396,12 @@ dllist<T>::iterator dllist<T>::insert(const_iterator it, value_type&& val)
     if (it == this->cend())
     {
         this->push_back(std::move(val));
-        return iterator(this->tail);
+        return iterator(this, this->tail);
     }
 
-    it.pntr->prev->next = new dllnode(std::move(val), it.pntr, it.pntr->prev);
-    it.pntr->prev = it.pntr->prev->next;
-    return it.pntr->prev;
+    it.node_pntr->prev->next = new dllnode(std::move(val), it.node_pntr, it.node_pntr->prev);
+    it.node_pntr->prev = it.node_pntr->prev->next;
+    return iterator(this, it.node_pntr->prev);
 };
 
 template<typename T>
@@ -362,12 +416,12 @@ dllist<T>::iterator dllist<T>::erase(const_iterator it)
     if (it == this->cend())
         return iterator(this->end());
 
-    dllnode* to_delete = it.pntr;
-    it.pntr->prev->next = it.pntr->next;
-    it.pntr->next->prev = it.pntr->prev;
-    dllnode* following = it.pntr->next;
+    dllnode* to_delete = it.node_pntr;
+    it.node_pntr->prev->next = it.node_pntr->next;
+    it.node_pntr->next->prev = it.node_pntr->prev;
+    dllnode* following = it.node_pntr->next;
     delete to_delete;
-    return iterator(following);
+    return iterator(this, following);
 }
 
 template<typename T>
