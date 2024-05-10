@@ -122,9 +122,6 @@ public:
     // Capacity
     bool empty() const {return this->head == nullptr && this->tail == nullptr;}
     size_type size() const;
-
-    // Friend methods
-    friend std::ostream operator<<(std::ostream& os, const dllist<value_type>& dllist);
 };
 
 template<typename T>

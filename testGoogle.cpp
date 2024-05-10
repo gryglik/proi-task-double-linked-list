@@ -68,10 +68,7 @@ TEST(dllistTest, copy_operator_itself)
     dllist<std::string> lst;
     lst.push_front("urobek");
     lst.push_front("konsternacja");
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wself-assign-overloaded"
     lst = lst;
-    #pragma GCC diagnostic pop
     auto it = lst.begin();
     ASSERT_EQ(*it++, "konsternacja");
     ASSERT_EQ(*it, "urobek");
@@ -105,10 +102,7 @@ TEST(dllistTest, move_operator_itself)
     dllist<std::string> lst;
     lst.push_front("urobek");
     lst.push_front("konsternacja");
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wself-move"
     lst = std::move(lst);
-    #pragma GCC diagnostic pop
     auto it = lst.begin();
     ASSERT_EQ(*it++, "konsternacja");
     ASSERT_EQ(*it, "urobek");
