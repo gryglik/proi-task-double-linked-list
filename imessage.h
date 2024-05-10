@@ -2,122 +2,102 @@
 #include<vector>
 #include<iostream>
 
-struct IMessage
+class IMessage
 {
-    virtual void write(std::ostream& os) const = 0;
+protected:
+    std::string msg;
+
+public:
+    virtual ~IMessage() = default;
+
+    virtual void write(std::ostream& os) const
+    {
+        os << "[ " << this->severity() << " ] " << this->msg;
+    }
+
     virtual std::string severity() const = 0;
 };
 
 class TraceMessage : public IMessage
 {
-private:
-    std::string msg;
 public:
     TraceMessage(const std::string message)
-        : msg(message) {};
-
-    void write(std::ostream& os) const override
     {
-        os << "[ TRACE ] "<< msg;
+        this->msg = message;
     }
 
     std::string severity() const override
     {
-        return "Trace";
+        return "TRACE";
     }
 };
 
 class DebugMessage : public IMessage
 {
-private:
-    std::string msg;
 public:
     DebugMessage(const std::string message)
-        : msg(message) {};
-
-    void write(std::ostream& os) const override
     {
-        os << "[ DEBUG ] "<< msg;
+        this->msg = message;
     }
 
     std::string severity() const override
     {
-        return "Debug";
+        return "DEBUG";
     }
 };
 
 class InfoMessage : public IMessage
 {
-private:
-    std::string msg;
 public:
     InfoMessage(const std::string message)
-        : msg(message) {};
-
-    void write(std::ostream& os) const override
     {
-        os << "[ INFO ] "<< msg;
+        this->msg = message;
     }
 
     std::string severity() const override
     {
-        return "Info";
+        return "INFO";
     }
 };
 
 class WarningMessage : public IMessage
 {
-private:
-    std::string msg;
 public:
     WarningMessage(const std::string message)
-        : msg(message) {};
-
-    void write(std::ostream& os) const override
     {
-        os << "[ WARNING ] "<< msg;
+        this->msg = message;
     }
 
     std::string severity() const override
     {
-        return "Warning";
+        return "WARNING";
     }
 };
 
 class ErrorMessage : public IMessage
 {
-private:
-    std::string msg;
 public:
     ErrorMessage(const std::string message)
-        : msg(message) {};
-
-    void write(std::ostream& os) const override
     {
-        os << "[ ERROR ] "<< msg;
+        this->msg = message;
     }
 
     std::string severity() const override
     {
-        return "Error";
+        return "ERROR";
     }
 };
 
 class FatalMessage : public IMessage
 {
-private:
-    std::string msg;
 public:
     FatalMessage(const std::string message)
-        : msg(message) {};
-
-    void write(std::ostream& os) const override
     {
-        os << "[ FATAL ] "<< msg;
+        this->msg = message;
     }
 
     std::string severity() const override
     {
-        return "Fatal";
+        return "FATAL";
     }
 };
