@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
+#include <sstream>
 #include "dllist.h"
+#include "imessage.h"
 
 TEST(dllistTest, copy_constructor_typical)
 {
@@ -739,4 +741,58 @@ TEST(dllistTest, size_typical)
     ASSERT_EQ(lst.size(), 1);
     lst.pop_front();
     ASSERT_EQ(lst.size(), 0);
+}
+
+TEST(IMessageTest, TraceMessage_typical)
+{
+    TraceMessage tm("test");
+    std::stringstream os;
+    tm.write(os);
+    ASSERT_EQ(os.str(), "[ TRACE ] test");
+    ASSERT_EQ(tm.severity(), "Trace");
+}
+
+TEST(IMessageTest, DebugMessage_typical)
+{
+    DebugMessage tm("test");
+    std::stringstream os;
+    tm.write(os);
+    ASSERT_EQ(os.str(), "[ DEBUG ] test");
+    ASSERT_EQ(tm.severity(), "Debug");
+}
+
+TEST(IMessageTest, InfoMessage_typical)
+{
+    InfoMessage tm("test");
+    std::stringstream os;
+    tm.write(os);
+    ASSERT_EQ(os.str(), "[ INFO ] test");
+    ASSERT_EQ(tm.severity(), "Info");
+}
+
+TEST(IMessageTest, WarningMessage_typical)
+{
+    WarningMessage tm("test");
+    std::stringstream os;
+    tm.write(os);
+    ASSERT_EQ(os.str(), "[ WARNING ] test");
+    ASSERT_EQ(tm.severity(), "Warning");
+}
+
+TEST(IMessageTest, ErrorMessage_typical)
+{
+    ErrorMessage tm("test");
+    std::stringstream os;
+    tm.write(os);
+    ASSERT_EQ(os.str(), "[ ERROR ] test");
+    ASSERT_EQ(tm.severity(), "Error");
+}
+
+TEST(IMessageTest, FatalMessage_typical)
+{
+    FatalMessage tm("test");
+    std::stringstream os;
+    tm.write(os);
+    ASSERT_EQ(os.str(), "[ FATAL ] test");
+    ASSERT_EQ(tm.severity(), "Fatal");
 }
