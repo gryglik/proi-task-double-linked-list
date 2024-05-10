@@ -2,6 +2,7 @@
 #include <sstream>
 #include "dllist.h"
 #include "imessage.h"
+#include "logger.h"
 
 TEST(dllistTest, copy_constructor_typical)
 {
@@ -795,4 +796,25 @@ TEST(IMessageTest, FatalMessage_typical)
     tm.write(os);
     ASSERT_EQ(os.str(), "[ FATAL ] test");
     ASSERT_EQ(tm.severity(), "FATAL");
+}
+
+TEST(LoggerTest, loger_typical)
+{
+    Logger lg;
+    lg.log(TraceMessage("I'll leave my trace here -> *trace*"));
+    lg.log(DebugMessage("Debug <3 BUGS"));
+    lg.log(InfoMessage("Info o__o"));
+    lg.log(WarningMessage("Your warning *here*"));
+    lg.log(ErrorMessage("Oh ERROR - that's a serious one"));
+    lg.log(FatalMessage("In polish we say *kaplica*"));
+    std::stringstream os;
+    os << lg;
+    ASSERT_EQ(os.str(),
+    "[ TRACE\t ] I'll leave my trace here -> *trace*\n"
+    "[ DEBUG\t ] Debug <3 BUGS\n"
+    "[ INFO\t ] Info o__o\n"
+    "[ WARNING\t ] Your warning *here*\n"
+    "[ ERROR\t ] Oh ERROR - that's a serious one\n"
+    "[ FATAL\t ] In polish we say *kaplica*\n");
+    std::cerr << lg;
 }

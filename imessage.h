@@ -10,10 +10,9 @@ protected:
 public:
     virtual ~IMessage() = default;
 
-    virtual void write(std::ostream& os) const
-    {
-        os << "[ " << this->severity() << " ] " << this->msg;
-    }
+    virtual IMessage* clone() const = 0;
+
+    void write(std::ostream& os) const { os << "[ " << this->severity() << "\t ] " << this->msg; }
 
     virtual std::string severity() const = 0;
 };
@@ -21,83 +20,59 @@ public:
 class TraceMessage : public IMessage
 {
 public:
-    TraceMessage(const std::string message)
-    {
-        this->msg = message;
-    }
+    TraceMessage(const std::string message) {this->msg = message;}
 
-    std::string severity() const override
-    {
-        return "TRACE";
-    }
+    TraceMessage* clone() const override {return new TraceMessage(*this);}
+
+    std::string severity() const override {return "TRACE";}
 };
 
 class DebugMessage : public IMessage
 {
 public:
-    DebugMessage(const std::string message)
-    {
-        this->msg = message;
-    }
+    DebugMessage(const std::string message) {this->msg = message;}
 
-    std::string severity() const override
-    {
-        return "DEBUG";
-    }
+    DebugMessage* clone() const override {return new DebugMessage(*this);}
+
+    std::string severity() const override {return "DEBUG";}
 };
 
 class InfoMessage : public IMessage
 {
 public:
-    InfoMessage(const std::string message)
-    {
-        this->msg = message;
-    }
+    InfoMessage(const std::string message) {this->msg = message;}
 
-    std::string severity() const override
-    {
-        return "INFO";
-    }
+    InfoMessage* clone() const override { return new InfoMessage(*this);}
+
+    std::string severity() const override {return "INFO";}
 };
 
 class WarningMessage : public IMessage
 {
 public:
-    WarningMessage(const std::string message)
-    {
-        this->msg = message;
-    }
+    WarningMessage(const std::string message) {this->msg = message;}
 
-    std::string severity() const override
-    {
-        return "WARNING";
-    }
+    WarningMessage* clone() const override { return new WarningMessage(*this);}
+
+    std::string severity() const override {return "WARNING";}
 };
 
 class ErrorMessage : public IMessage
 {
 public:
-    ErrorMessage(const std::string message)
-    {
-        this->msg = message;
-    }
+    ErrorMessage(const std::string message) {this->msg = message;}
 
-    std::string severity() const override
-    {
-        return "ERROR";
-    }
+    ErrorMessage* clone() const override {return new ErrorMessage(*this);}
+
+    std::string severity() const override {return "ERROR";}
 };
 
 class FatalMessage : public IMessage
 {
 public:
-    FatalMessage(const std::string message)
-    {
-        this->msg = message;
-    }
+    FatalMessage(const std::string message) {this->msg = message;}
 
-    std::string severity() const override
-    {
-        return "FATAL";
-    }
+    FatalMessage* clone() const override {return new FatalMessage(*this);}
+
+    std::string severity() const override {return "FATAL";}
 };
