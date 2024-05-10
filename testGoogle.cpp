@@ -749,7 +749,7 @@ TEST(IMessageTest, TraceMessage_typical)
     TraceMessage tm("test");
     std::stringstream os;
     tm.write(os);
-    ASSERT_EQ(os.str(), "[ TRACE ] test");
+    ASSERT_EQ(os.str(), "[ TRACE\t ] test");
     ASSERT_EQ(tm.severity(), "TRACE");
 }
 
@@ -758,7 +758,7 @@ TEST(IMessageTest, DebugMessage_typical)
     DebugMessage tm("test");
     std::stringstream os;
     tm.write(os);
-    ASSERT_EQ(os.str(), "[ DEBUG ] test");
+    ASSERT_EQ(os.str(), "[ DEBUG\t ] test");
     ASSERT_EQ(tm.severity(), "DEBUG");
 }
 
@@ -767,7 +767,7 @@ TEST(IMessageTest, InfoMessage_typical)
     InfoMessage tm("test");
     std::stringstream os;
     tm.write(os);
-    ASSERT_EQ(os.str(), "[ INFO ] test");
+    ASSERT_EQ(os.str(), "[ INFO\t ] test");
     ASSERT_EQ(tm.severity(), "INFO");
 }
 
@@ -776,7 +776,7 @@ TEST(IMessageTest, WarningMessage_typical)
     WarningMessage tm("test");
     std::stringstream os;
     tm.write(os);
-    ASSERT_EQ(os.str(), "[ WARNING ] test");
+    ASSERT_EQ(os.str(), "[ WARNING\t ] test");
     ASSERT_EQ(tm.severity(), "WARNING");
 }
 
@@ -785,7 +785,7 @@ TEST(IMessageTest, ErrorMessage_typical)
     ErrorMessage tm("test");
     std::stringstream os;
     tm.write(os);
-    ASSERT_EQ(os.str(), "[ ERROR ] test");
+    ASSERT_EQ(os.str(), "[ ERROR\t ] test");
     ASSERT_EQ(tm.severity(), "ERROR");
 }
 
@@ -794,7 +794,7 @@ TEST(IMessageTest, FatalMessage_typical)
     FatalMessage tm("test");
     std::stringstream os;
     tm.write(os);
-    ASSERT_EQ(os.str(), "[ FATAL ] test");
+    ASSERT_EQ(os.str(), "[ FATAL\t ] test");
     ASSERT_EQ(tm.severity(), "FATAL");
 }
 
